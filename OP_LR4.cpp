@@ -30,11 +30,33 @@ public:
 	int32_t subchunk2Size; // == NumSamples * NumChannels * BitsPerSample/8, кількість байтів аудіоданих
 	int16_t* data;         // семпли
 
-	mWave() { data = nullptr; };
+	mWave()
+	{
+		int32_t chunkId = 0;
+		int32_t chunkSize = 0;
+		int32_t format = 0;
+		//SUBCHUNK1
+		int32_t subchunk1Id = 0;
+		int32_t subchunk1Size = 0;
+		int32_t audioFormat = 0;
+		int16_t numChannels = 0;
+		int32_t sampleRate = 0;
+		int32_t byteRate = 0;
+		int32_t blockAlign = 0;
+		int16_t bitsPerSample = 0;
+		//SUBCHUNK2
+		int32_t subchunk2Id = 0;
+		int32_t subchunk2Size = 0;
+		int16_t* data = nullptr;
+	};
 	mWave(char* path)
 	{
+
 		FILE* input;
-		fopen_s(&input, path, "rb");
+
+		errno_t err;
+		err = fopen_s(&input, path, "rb");
+
 		fread(&chunkId, sizeof(chunkId), 1, input);
 		fread(&chunkSize, sizeof(chunkSize), 1, input);
 		fread(&format, sizeof(format), 1, input);
@@ -50,6 +72,37 @@ public:
 		fread(&subchunk2Size, sizeof(subchunk2Size), 1, input);
 
 		data = new int16_t[subchunk2Size / blockAlign];
+
+		for (int i = 0; i < subchunk2Size / blockAlign; i++)
+		{
+			int32_t cur;
+
+			fread(&cur, sizeof(blockAlign), 1, input);
+			data[i] = cur;
+		}
+
+		fclose(input);
+
+	}
+	~mWave()
+	{
+		if (data != nullptr)
+			delete[] data;
+	}
+	bool changeS(int coef)
+	{
+		if (coef <= 0)
+			return false;
+		int16_t* newData = new int16_t[coef * subchunk2Size / blockAlign];
+
+		for (int i = 0; i < coef * subchunk2Size / blockAlign; i++)
+		{
+
+		}
+
+
+
+		return true;
 	}
 };
 
