@@ -107,9 +107,35 @@ public:
 
 		subchunk2Size *= coef;
 		chunkSize = 36 + subchunk2Size;
-
-
 		return true;
+	}
+	void write(char* path)
+	{
+		FILE* output;
+
+		fopen_s(&output, path, "rb");
+
+		fwrite(&chunkId, sizeof(chunkId), 1, output);
+		fwrite(&chunkSize, sizeof(chunkSize), 1, output);
+		fwrite(&format, sizeof(format), 1, output);
+		fwrite(&subchunk1Id, sizeof(subchunk1Id), 1, output);
+		fwrite(&subchunk1Size, sizeof(subchunk1Size), 1, output);
+		fwrite(&audioFormat, sizeof(audioFormat), 1, output);
+		fwrite(&numChannels, sizeof(numChannels), 1, output);
+		fwrite(&sampleRate, sizeof(sampleRate), 1, output);
+		fwrite(&byteRate, sizeof(byteRate), 1, output);
+		fwrite(&blockAlign, sizeof(blockAlign), 1, output);
+		fwrite(&bitsPerSample, sizeof(bitsPerSample), 1, output);
+		fwrite(&subchunk2Id, sizeof(subchunk2Id), 1, output);
+		fwrite(&subchunk2Size, sizeof(subchunk2Size), 1, output);
+
+		int16_t cur;
+		for (int i = 0; i < subchunk2Size / blockAlign; i++)
+		{
+			data[i] = cur;
+			fwrite(&cur, sizeof(blockAlign), 1, output);
+		}
+		fclose(output);
 	}
 };
 
@@ -118,7 +144,22 @@ public:
 
 int main()
 {
+	char *input,* output;
+	int coef;
 
-
+	cout << "Enter the name of input file: ";
+	cin >> input;
+	cout << "Enter the name of output file: ";
+	cin >> output;
+	cout << "Enter the coeficient: ";
+	cin >> coef;
+	mWave a(input);
+	if (!a.changeS(coef))
+		cout << "Error!" << endl;
+	else
+	{
+		a.write(output);
+		cout << "Successfully saved!"<<endl;
+	}
 
 }
