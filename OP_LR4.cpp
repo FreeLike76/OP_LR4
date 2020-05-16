@@ -91,15 +91,22 @@ public:
 	}
 	bool changeS(int coef)
 	{
-		if (coef <= 0)
+		if (coef <= 0||data==nullptr)
 			return false;
 		int16_t* newData = new int16_t[coef * subchunk2Size / blockAlign];
 
-		for (int i = 0; i < coef * subchunk2Size / blockAlign; i++)
+		for (int i = 0; i < subchunk2Size / blockAlign; i++)
 		{
-
+			for (int j = 0; j < coef; j++)
+			{
+				newData[coef * i + j] = data[i];
+			}
 		}
+		delete[] data;
+		data = newData;
 
+		subchunk2Size *= coef;
+		chunkSize = 36 + subchunk2Size;
 
 
 		return true;
