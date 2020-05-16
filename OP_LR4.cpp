@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <stdio.h>
+#include <fstream>
 
 using namespace std;
 
@@ -73,10 +74,10 @@ public:
 
 		data = new int16_t[subchunk2Size / blockAlign];
 
+		int16_t cur;
+
 		for (int i = 0; i < subchunk2Size / blockAlign; i++)
 		{
-			int32_t cur;
-
 			fread(&cur, sizeof(blockAlign), 1, input);
 			data[i] = cur;
 		}
@@ -111,6 +112,10 @@ public:
 	}
 	void write(char* path)
 	{
+		ofstream create;
+		create.open(path);
+		create.close();
+
 		FILE* output;
 
 		fopen_s(&output, path, "rb");
@@ -132,8 +137,9 @@ public:
 		int16_t cur;
 		for (int i = 0; i < subchunk2Size / blockAlign; i++)
 		{
-			data[i] = cur;
+			
 			fwrite(&cur, sizeof(blockAlign), 1, output);
+			data[i] = cur;
 		}
 		fclose(output);
 	}
