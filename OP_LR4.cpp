@@ -61,7 +61,7 @@ public:
 
 		for (int i = 0; i < dataChunk.subchunk2Size / header.blockAlign; i++)
 		{
-			fread(&data[i],header.blockAlign, 1, input);
+			fread(&data[i], header.blockAlign, 1, input);
 		}
 		fclose(input);
 	}
@@ -90,17 +90,17 @@ public:
 	}
 	void saveTo(char* output)
 	{
-		ofstream fout;
-		fout.open(output, ios::binary);
-		fout << header.chunkId << header.chunkSize << header.format
-			<< header.subchunk1Id << header.audioFormat << header.numChannels
-			<< header.sampleRate << header.byteRate << header.blockAlign << header.bitsPerSample
-			<< dataChunk.subchunk2Id << dataChunk.subchunk2Size;
+		ofstream create;
+		create.open(output, ios::binary);
+		create.close();
+		FILE* fout = fopen(output, "w");
+		fwrite(&header, sizeof(header), 1, fout);
+		fwrite(&dataChunk, sizeof(dataChunk), 1, fout);
 		for (int i = 0; i < dataChunk.subchunk2Size / header.blockAlign; i++)
 		{
-			fout << data[i];
+			fwrite(&data[i], header.blockAlign, 1, fout);
 		}
-		fout.close();
+		fclose(fout);
 	}
 };
 
